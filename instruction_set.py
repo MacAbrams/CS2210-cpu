@@ -5,6 +5,8 @@ It supports only a small set of instructions.
 CS 2210 Computer Organization
 Clayton Cafiero <cbcafier@uvm.edu>
 
+v. 1.0.0 2025-10-29
+
 """
 from dataclasses import dataclass  # For Instruction class, below.
 
@@ -29,7 +31,7 @@ ISA = {
         'format': 'I',
         'variant': 'imm-only',
         'fields': ['opcode(4)', 'rd(3)', 'imm(8)', 'zero(1)'],
-        'semantics': 'Rd[15:8] <-- imm8, Rd[7:0] <-- 0',
+        'semantics': 'Rd[15:8] <-- imm8',
         'description': 'Load immediate into upper byte of Rd.',
         'register_write': True,
         'memory_write': False,
@@ -45,7 +47,7 @@ ISA = {
         'description': 'Load word from memory at Ra + offset into Rd.',
         'register_write': True,
         'memory_write': False,
-        'alu': False,
+        'alu': True,    # for computing effective address
         'immediate': False,
         'branch': False
     },
@@ -57,7 +59,7 @@ ISA = {
         'description': 'Store Ra to memory at Rb + offset.',
         'register_write': False,
         'memory_write': True,
-        'alu': False,
+        'alu': True,    # for computing effective address
         'immediate': False,
         'branch': False
     },
@@ -143,8 +145,8 @@ ISA = {
         'description': 'Branch if zero flag is set.',
         'register_write': False,  # writes directly to PC, not general-purpose register
         'memory_write': False,
-        'alu': False,
-        'immediate': False,
+        'alu': True,          # for computing effective address
+        'immediate': True,    # offset
         'branch': True
     },
     'BNE': {
@@ -156,8 +158,8 @@ ISA = {
         'description': 'Branch if zero flag is clear.',
         'register_write': False,  # writes directly to PC, not general-purpose register
         'memory_write': False,
-        'alu': False,
-        'immediate': False,
+        'alu': True,        # for computing effective address
+        'immediate': True,  # offset
         'branch': True
     },
     'B': {
@@ -166,11 +168,12 @@ ISA = {
         'variant': 'uncond',
         'fields': ['opcode(4)', 'ra(3)', 'offset(8)', 'zero(1)'],
         'semantics': 'PC <-- Ra + signextend(offset8)',
-        'description': 'Unconditional branch using register base plus signed 8-bit offset.',
-        'register_write': False,
+        'description': 'Unconditional branch using register base '
+                       'plus signed 8-bit offset.',
+        'register_write': False,  # writes directly to PC, not general-purpose register
         'memory_write': False,
-        'alu': False,
-        'immediate': False,
+        'alu': True,        # for computing effective address
+        'immediate': True,  # offset
         'branch': True
     },
     'CALL': {
@@ -181,9 +184,9 @@ ISA = {
         'semantics': 'Push (PC + 2); PC <-- PC + signextend(offset8)',
         'description': 'Call subroutine at address given by signed 8-bit immediate. '
                        'Return address (PC + 2) is pushed onto stack.',
-        'register_write': False,
+        'register_write': False,  # writes directly to PC, not general-purpose register
         'memory_write': False,
-        'alu': False,
+        'alu': True,
         'immediate': True,  # offset
         'branch': True
     },
@@ -226,7 +229,7 @@ def get_instruction_spec(key):
     """
     if isinstance(key, str):
         return ISA[key.upper()]
-    return ISA[OPCODE_MAP[key]]
+    return ISA[OPCODE_MAP[key]]  # if it's not a str, assume it's an int
 
 
 @dataclass
