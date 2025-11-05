@@ -1,7 +1,7 @@
-
-
 """
 Starter code for Catamount Processor Unit ALU
+
+Group Members: Mac Abrams, Julien Chabert, Alex Tolgyesi
 
 We are limited to 16 bits, and five operations: ADD, SUB, AND, OR, and SHFT.
 
@@ -67,7 +67,7 @@ class Alu:
         """
         Decode control signal to determine operation.
         """
-        c = c & 0b111 # ensure only three bits are used
+        c = c & 0b111  # ensure only three bits are used
         match c:
             case 0b000:
                 self._op = "ADD"
@@ -137,7 +137,7 @@ class Alu:
         SUB
         """        
         a = a & WORD_MASK
-        b = (~b+1) & WORD_MASK
+        b = (~b + 1) & WORD_MASK
         result = (a + b) & WORD_MASK
         self._update_arith_flags_add(a, b, result)
         return result
@@ -146,16 +146,16 @@ class Alu:
         """
         Bitwise AND
         """
-        result = (a & b) & WORD_MASK;
-        self._update_logic_flags(result);
+        result = (a & b) & WORD_MASK
+        self._update_logic_flags(result)
         return result
 
     def _or(self, a, b):
         """
         Bitwise OR
         """
-        result = (a | b) & WORD_MASK;
-        self._update_logic_flags(result);
+        result = (a | b) & WORD_MASK
+        self._update_logic_flags(result)
         return result
 
     def _shft(self, a, b):
@@ -170,12 +170,12 @@ class Alu:
         a &= WORD_MASK  # Keep this line as is
 
         # Replace these two lines with a complete implementation
-        if b & 0x8000==0 :
+        if b & 0x8000 == 0 :
             result = (a << (b & 0xf)) & WORD_MASK
-            bit_out = (a >> (16-(b & 0xf)))&1
+            bit_out = (a >> (16 - (b & 0xf))) & 1
         else :
             result = (a >> (b & 0xf)) & WORD_MASK
-            bit_out = (a >> ((b-1) & 0xf))&1
+            bit_out = (a >> ((b - 1) & 0xf)) & 1
 
         # Keep these last two lines as they are
         self._update_shift_flags(result, bit_out)
@@ -196,8 +196,6 @@ class Alu:
             self._flags |= N_FLAG
         if result == 0:
             self._flags |= Z_FLAG
-        self._flags &= ~C_FLAG
-        self._flags &= ~V_FLAG
 
     def _update_arith_flags_add(self, a, b, result):
         """
@@ -229,11 +227,10 @@ class Alu:
         if sa == sb and sr != sa:
             self._flags |= V_FLAG
 
-
     def _update_shift_flags(self, result, bit_out):
         if result & (1 << (WORD_SIZE - 1)):
             self._flags |= N_FLAG
         if result == 0:
             self._flags |= Z_FLAG
-        self._flags |= C_FLAG*bit_out
-        self._flags &= ~V_FLAG
+        if bit_out != 0:
+            self._flags |= C_FLAG
