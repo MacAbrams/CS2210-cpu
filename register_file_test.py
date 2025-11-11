@@ -25,7 +25,6 @@ def test_reject_data_out_of_bounds(value):
         r = Register("R0")
         r.write(value)
 
-
 @pytest.mark.parametrize(
     "value",
     [
@@ -162,3 +161,4 @@ def test_extraneous_write_args_are_ignored_on_read():
     rf.execute(rd=3, data=77, write_enable=False, ra=1, rb=5)
     assert rf.execute(ra=1) == (77, None)
     assert rf.execute(ra=1, rb=5) == (77, 42)
+    
