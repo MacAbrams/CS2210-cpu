@@ -61,6 +61,18 @@ def test_read_write_rf():
     assert rf.execute(ra=7) == (77, None)
 
 
+def test_read_tuple():
+    """
+    Added 2025-11-11. Students must add to their file.
+    """
+    rf = RegisterFile()
+    rf.execute(rd=0, data=77, write_enable=True)
+    assert rf.execute(ra=0) == (77, None)
+    rf.execute(rd=7, data=42, write_enable=True)
+    assert rf.execute(ra=7) == (42, None)
+    assert rf.execute(ra=0, rb=7) == (77, 42)
+
+
 def test_error_on_write_no_destination():
     """
     Make sure register file rejects bad destination on write (default is
