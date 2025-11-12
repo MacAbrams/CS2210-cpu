@@ -5,9 +5,15 @@ memory is reserved for the stack (addresses from 0xFF00).
 
 CS 2210 Computer Organization
 Clayton Cafiero <cbcafier@uvm.edu>
+
+First released: 2025-11-10
+  Revision: 2025-11-11
+  - Added `return True` to all write methods and write stubs.
+  Revision: 2025-11-12
+  - Moved definition of `STACK_BASE` to `constants.py`.
 """
 
-from constants import WORD_SIZE
+from constants import STACK_BASE, WORD_SIZE
 
 
 class Memory:
@@ -91,10 +97,8 @@ class DataMemory(Memory):
     Word-addressable memory for data. Reserves a portion for stack use.
     """
 
-    STACK_BASE = 0xFF00
-
     def write(self, addr, value, from_stack=False):
-        if addr >= self.STACK_BASE and not from_stack:
+        if addr >= STACK_BASE and not from_stack:
             raise RuntimeError(f"Write to stack region "
                                "{addr:#06x} disallowed.")
         super().write(addr, value)

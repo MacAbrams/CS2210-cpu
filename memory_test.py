@@ -7,6 +7,7 @@ Clayton Cafiero <cbcafier@uvm.edu>
 
 import pytest
 
+from constants import STACK_BASE
 from memory import DataMemory, InstructionMemory, Memory
 
 
@@ -108,11 +109,11 @@ def test_data_memory_blocks_nonstack_write():
     dm = DataMemory()
     dm.write_enable(True)
     with pytest.raises(RuntimeError, match="stack region"):
-        dm.write(DataMemory.STACK_BASE, 0xABCD)
+        dm.write(STACK_BASE, 0xABCD)
 
     dm.write_enable(True)
     with pytest.raises(RuntimeError):
-        dm.write(DataMemory.STACK_BASE + 1, 0xBEEF)
+        dm.write(STACK_BASE + 1, 0xBEEF)
 
 
 def test_data_memory_allows_stack_write_when_flag_set():
@@ -121,10 +122,10 @@ def test_data_memory_allows_stack_write_when_flag_set():
     """
     dm = DataMemory()
     dm.write_enable(True)
-    dm.write(DataMemory.STACK_BASE, 0xABCD, from_stack=True)
+    dm.write(STACK_BASE, 0xABCD, from_stack=True)
 
     # confirm value is stored
-    assert dm.read(DataMemory.STACK_BASE) == 0xABCD
+    assert dm.read(STACK_BASE) == 0xABCD
 
 
 def test_data_memory_normal_region_writable():

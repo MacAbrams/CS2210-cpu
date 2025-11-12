@@ -25,6 +25,7 @@ def test_reject_data_out_of_bounds(value):
         r = Register("R0")
         r.write(value)
 
+
 @pytest.mark.parametrize(
     "value",
     [
@@ -58,6 +59,18 @@ def test_read_write_rf():
     assert rf.execute(ra=0) == (77, None)
     rf.execute(rd=7, data=77, write_enable=True)
     assert rf.execute(ra=7) == (77, None)
+
+
+def test_read_tuple():
+    """
+    Added 2025-11-11. Students must add to their file.
+    """
+    rf = RegisterFile()
+    rf.execute(rd=0, data=77, write_enable=True)
+    assert rf.execute(ra=0) == (77, None)
+    rf.execute(rd=7, data=42, write_enable=True)
+    assert rf.execute(ra=7) == (42, None)
+    assert rf.execute(ra=0, rb=7) == (77, 42)
 
 
 def test_error_on_write_no_destination():
@@ -161,4 +174,3 @@ def test_extraneous_write_args_are_ignored_on_read():
     rf.execute(rd=3, data=77, write_enable=False, ra=1, rb=5)
     assert rf.execute(ra=1) == (77, None)
     assert rf.execute(ra=1, rb=5) == (77, 42)
-    
