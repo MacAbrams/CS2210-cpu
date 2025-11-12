@@ -56,11 +56,11 @@ class Alu:
         self._flags = 0b0000
         # Dictionary to look up methods by operation name.
         self._ops = {
-            "ADD"  : self._add,
-            "SUB"  : self._sub,
-            "AND"  : self._and,
-            "OR"   : self._or,
-            "SHFT" : self._shft
+            "ADD": self._add,
+            "SUB": self._sub,
+            "AND": self._and,
+            "OR": self._or,
+            "SHFT": self._shft
         }
 
     def decode(self, c):
@@ -135,7 +135,7 @@ class Alu:
     def _sub(self, a, b):
         """
         SUB
-        """        
+        """
         a = a & WORD_MASK
         b = (~b + 1) & WORD_MASK
         result = (a + b) & WORD_MASK
@@ -170,10 +170,10 @@ class Alu:
         a &= WORD_MASK  # Keep this line as is
 
         # Replace these two lines with a complete implementation
-        if b & 0x8000 == 0 :
+        if (b & 0x8000) == 0:
             result = (a << (b & 0xf)) & WORD_MASK
             bit_out = (a >> (16 - (b & 0xf))) & 1
-        else :
+        else:
             result = (a >> (b & 0xf)) & WORD_MASK
             bit_out = (a >> ((b - 1) & 0xf)) & 1
 
@@ -234,10 +234,11 @@ class Alu:
             self._flags |= Z_FLAG
         if bit_out != 0:
             self._flags |= C_FLAG
-    
+
     def set_op(self, op):
         """
-        Public-facing setter. Added 2025-11-09. Students will need to add this to their ALU implementation.
+        Public-facing setter. Added 2025-11-09.
+        Students will need to add this to their ALU implementation.
         """
         if op in self._ops.keys():
             self._op = op
