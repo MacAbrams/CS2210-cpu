@@ -109,10 +109,9 @@ class RegisterFile:
         if ra is None and rb is not None:
             raise TypeError("Cannot read; single register "
                             "read should specify `ra`!")
-        if rb is None and ra is not None:
-            self._check_index(ra)
-            return self.registers[ra].read(), None
         self._check_index(ra)
+        if rb is None and ra is not None:
+            return self.registers[ra].read(), None
         self._check_index(rb)
         return self.registers[ra].read(), self.registers[rb].read()
 
