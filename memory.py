@@ -27,13 +27,17 @@ class Memory:
     def _check_addr(self, address):
         # Make sure address is positive, in the desired range,
         # otherwise raise a `ValueError`. Replace `pass` below.
-        pass
+        if address < 0 or address > 0xffff:
+            raise ValueError("Invalid address")
+
 
     def write_enable(self, b):
         # Make sure `b` is a Boolean (hint: use `isinstance()).
         # If not, raise `TypeError`. If OK, then set
         # `_write_enable` accordingly. Replace `pass` below.
-        pass
+        if not isinstance(b, bool):
+            raise TypeError("Write Enable not a Boolean")
+        self._write_enable = b
 
     def read(self, addr):
         """
@@ -42,23 +46,28 @@ class Memory:
         # Make sure `addr` is OK by calling `_check_addr`. If OK, return value
         # from `_cells` or default if never written. (Hint: use `.get()`.)
         # Replace `pass` below.
-        pass
+        self._check_addr(addr)
+        value = self._cells.get(addr)
+        if value is None:
+            return 0
+        return value
 
     def write(self, addr, value):
         """
         Write 16-bit word to memory, masking to 16 bits.
         """
-        # Check to see if `_write_enable` is true. If not, raise `RuntimeError`.
-        # Otherwise, call `_check_addr()`. If OK, write masked value to the
-        # selected address, then turn off `_write_enable` when done. Return
-        # `True` on success. Replace `pass` below.
-        pass
+        if not self._write_enable:
+            raise RuntimeError("Write while _write_enable set to False")
+        self._check_addr(addr)
+        self._cells[addr] = value & 0xffff
+        self._write_enable = False
         return True
 
     def hexdump(self, start=0, stop=None, width=8):
         """
         Yield formatted lines showing memory cells in ascending order
-        from `start` to the highest initialized address (or `stop` if provided).
+        from `start` to the highest initialized
+        address (or `stop` if provided).
         Uninitialized cells display as 0000.
         """
         if not self._cells:
@@ -91,9 +100,9 @@ class DataMemory(Memory):
 
     def write(self, addr, value, from_stack=False):
         if addr >= STACK_BASE and not from_stack:
-            raise RuntimeError(f"Write to stack region {addr:#06x} disallowed.")
+            raise RuntimeError(f"Write to stack region "
+                               "{addr:#06x} disallowed.")
         super().write(addr, value)
-        return True
 
 
 class InstructionMemory(Memory):
@@ -111,9 +120,9 @@ class InstructionMemory(Memory):
         Prevent runtime writes except during program loading.
         """
         if not self._loading:
-            raise RuntimeError("Cannot write to instruction memory outside of loader.")
+            raise RuntimeError("Cannot write to "
+                               "instruction memory outside of loader.")
         super().write(addr, value)
-        return True
 
     def load_program(self, words, start_addr=0x0000):
         """
@@ -125,7 +134,13 @@ class InstructionMemory(Memory):
         # `super().write(start_addr + offset, word)` as needed. Important:
         # Ensure that `_loading` and `_write_enable` are set to `False` when
         # done. (Hint: use `try`/`finally`.) Replace `pass` below.
-        pass
+        offset = 0
+        for word in words:
+            self._write_enable = True
+            super().write(start_addr + offset, word)
+            offset += 1
+        self._write_enable = False
+        self._loading = False
 
 
 if __name__ == "__main__":
