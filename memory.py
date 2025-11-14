@@ -1,7 +1,7 @@
 """
 We're going with Harvard architecture here. So we'll have two separate
 address spaces, one for data and one for instructions. A portion of data
-memory is reserved for the stack (addresses from 0xFF00).
+memory is reserved for the stack (addresses between 0xFFFF and 0xFF00).
 
 CS 2210 Computer Organization
 Clayton Cafiero <cbcafier@uvm.edu>
@@ -29,6 +29,7 @@ class Memory:
         # otherwise raise a `ValueError`. Replace `pass` below.
         if address < 0 or address > 0xffff:
             raise ValueError("Invalid address")
+
 
     def write_enable(self, b):
         # Make sure `b` is a Boolean (hint: use `isinstance()).
