@@ -103,6 +103,7 @@ class DataMemory(Memory):
             raise RuntimeError(f"Write to stack region "
                                "{addr:#06x} disallowed.")
         super().write(addr, value)
+        return True
 
 
 class InstructionMemory(Memory):
@@ -123,6 +124,7 @@ class InstructionMemory(Memory):
             raise RuntimeError("Cannot write to "
                                "instruction memory outside of loader.")
         super().write(addr, value)
+        return True
 
     def load_program(self, words, start_addr=0x0000):
         """
