@@ -66,7 +66,10 @@ class Cpu:
             # execute...
             match self._decoded.mnem:
                 case "LOADI":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    data = self._decoded.imm & 0x00FF
+                    print(data)
+                    self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "LUI":
                     # TODO Refactor for future semester(s) if any.
                     # Cheating for compatibility with released ALU tests
@@ -78,8 +81,16 @@ class Cpu:
                     lower &= 0x00FF  # clear upper bits
                     data = upper | lower
                     self._regs.execute(rd=rd, data=data, write_enable=True)
+                    print(data)
                 case "LOAD":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    imm6 = self._decoded.imm & 0x003F
+                    imm8 = ([0xff,0x3f][imm6 & 0x20 == 0]) & imm6
+                    addr = self_regs.execute(ra=ra) + imm8
+                    data = self._memory.read(addr=addr)
+
+                    self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "STORE":
                     pass  # complete implementation here
                 case "ADDI":
