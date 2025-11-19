@@ -210,9 +210,13 @@ class Cpu:
     def sext(value, bits=16):
         sign_bit = 1 << (bits - 1)
         return (value & (sign_bit - 1)) - (value & sign_bit)
-    def get_reg(self, num):
-        a, b = self._regs.execute(ra=num)
-        return a
+
+    def get_reg(self, r):
+        """
+        Public accessor (getter) for
+        sungle register value.
+        """
+        return self._regs.execute(ra=r)[0]
 
 
 # Helper function
