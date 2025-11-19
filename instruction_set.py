@@ -57,7 +57,8 @@ ISA = {
         "format": "M",
         "fields": ["opcode(4)", "rd(3)", "ra(3)", "imm(6)"],
         "semantics": "Rd <-- MEM[Ra + signextend(imm6)]",
-        "description": "Load word from memory at Ra + offset into Rd.",
+        "description": "Load word from memory at [Ra + offset] into Rd. "
+        "Note: When decoded imm is in field addr. TODO: Fix another time.",
         "register_write": True,
         "memory_write": False,
         "alu": False,  # assume aux adder for eff address
@@ -69,7 +70,7 @@ ISA = {
         "format": "M",
         "fields": ["opcode(4)", "ra(3)", "rb(3)", "imm(6)"],
         "semantics": "MEM[Rb + signextend(imm6)] <-- Ra",
-        "description": "Store Ra to memory at Rb + offset.",
+        "description": "Store Ra (data source) to memory at Rb (base) + offset.",
         "register_write": False,
         "memory_write": True,
         "alu": False,  # assume aux adder for eff address
@@ -158,12 +159,12 @@ ISA = {
         "opcode": 0xA,
         "format": "B",
         "variant": "cond",
-        "fields": ["opcode(4)", "offset(8)", "zero(4)"],
-        "semantics": "if Z == 1: PC <-- PC + signextend(offset8)",
+        "fields": ["opcode(4)", "imm(8)", "zero(4)"],
+        "semantics": "if Z == 1: PC <-- PC + signextend(imm8)",
         "description": "Branch if zero flag is set. "
         "Branches apply this operation to PC after fetch, not PC before "
         "fetch. Branch offsets are PC-relative to the instruction after the "
-        "branch (PC after fetch).",
+        "branch (PC after fetch). imm8 is offset.",
         "register_write": False,  # writes directly to PC, not GP register
         "memory_write": False,
         "alu": False,  # assume aux adder for eff address
@@ -174,12 +175,12 @@ ISA = {
         "opcode": 0xB,
         "format": "B",
         "variant": "cond",
-        "fields": ["opcode(4)", "offset(8)", "zero(4)"],
-        "semantics": "if Z == 0: PC <-- PC + signextend(offset8)",
+        "fields": ["opcode(4)", "imm(8)", "zero(4)"],
+        "semantics": "if Z == 0: PC <-- PC + signextend(imm8)",
         "description": "Branch if zero flag is clear. "
         "Branches apply this operation to PC after fetch, not PC before fetch. "
         "Branch offsets are PC-relative to the instruction after the branch "
-        "(PC after fetch).",
+        "(PC after fetch). imm8 is offset",
         "register_write": False,  # writes directly to PC, not GP register
         "memory_write": False,
         "alu": False,  # assume aux adder for eff address
@@ -190,12 +191,12 @@ ISA = {
         "opcode": 0xC,
         "format": "B",
         "variant": "uncond",
-        "fields": ["opcode(4)", "offset(8)", "zero(4)"],
-        "semantics": "PC <-- PC + signextend(offset8)",
+        "fields": ["opcode(4)", "imm(8)", "zero(4)"],
+        "semantics": "PC <-- PC + signextend(imm8)",
         "description": "Unconditional branch by signed 8-bit PC-relative "
         "offset. Branches apply this operation to PC after fetch, not PC "
         "before fetch. Branch offsets are PC-relative to the instruction "
-        "after the branch (PC after fetch).",
+        "after the branch (PC after fetch). imm8 is offset.",
         "register_write": False,  # writes directly to PC, not GP register
         "memory_write": False,
         "alu": False,
@@ -347,7 +348,7 @@ class Instruction:  # pylint: disable=too-many-instance-attributes
             self.addr = word & 0x3F  # 63 (6 bits)
             self.zero = 0  # no zero padding
         elif self.mnem == "CALL":  # added 2025-10-31
-            self.imm = (word >> 4) & 0xFF
+            self.imm = (word >> 4) & 0xFF  # TODO: Should be labeled `offset`.
             self.zero = word & 0xF  # 4-bit zero padding
         elif self.mnem in ("RET", "HALT"):  # added 2025-10-31
             self.zero = word & 0xFFF  # 12-bit zero padding
@@ -399,9 +400,9 @@ class Instruction:  # pylint: disable=too-many-instance-attributes
         elif self.mnem == "ADDI":
             s += f"rd=0x{self.rd:01X}, ra=0x{self.ra:01X}, imm=0x{self.imm:02X}, "
         elif self.mnem == "LOAD":
-            s += f"rd=0x{self.rd:01X}, ra=0x{self.ra:01X}, imm=0x{self.addr:03X}, "
+            s += f"rd=0x{self.rd:01X}, ra=0x{self.ra:01X}, addr=0x{self.addr:03X}, "
         elif self.mnem == "STORE":
-            s += f"ra=0x{self.ra:01X}, rb=0x{self.rb:01X}, imm=0x{self.addr:03X}, "
+            s += f"ra=0x{self.ra:01X}, rb=0x{self.rb:01X}, addr=0x{self.addr:03X}, "
         elif self.mnem == "CALL":
             s += f"imm=0x{self.imm:02X}, zero=0x{self.zero:01X}, "
         elif self.mnem in ("RET", "HALT"):

@@ -66,10 +66,7 @@ class Cpu:
             # execute...
             match self._decoded.mnem:
                 case "LOADI":
-                    rd = self._decoded.rd
-                    data = self._decoded.imm & 0x00FF
-                    print(data)
-                    self._regs.execute(rd=rd, data=data, write_enable=True)
+                    pass  # complete implementation here
                 case "LUI":
                     # TODO Refactor for future semester(s) if any.
                     # Cheating for compatibility with released ALU tests
@@ -81,16 +78,8 @@ class Cpu:
                     lower &= 0x00FF  # clear upper bits
                     data = upper | lower
                     self._regs.execute(rd=rd, data=data, write_enable=True)
-                    print(data)
                 case "LOAD":
-                    rd = self._decoded.rd
-                    ra = self._decoded.ra
-                    imm6 = self._decoded.imm & 0x003F
-                    imm8 = ([0xff,0x3f][imm6 & 0x20 == 0]) & imm6
-                    addr = self_regs.execute(ra=ra) + imm8
-                    data = self._memory.read(addr=addr)
-
-                    self._regs.execute(rd=rd, data=data, write_enable=True)
+                    pass  # complete implementation here
                 case "STORE":
                     pass  # complete implementation here
                 case "ADDI":
@@ -128,7 +117,7 @@ class Cpu:
                     # push return address...
                     self._d_mem.write(self._sp, ret_addr, from_stack=True)
                     offset = self._decoded.imm
-                    self._pc += self.sext(offset)  # jump to target
+                    self._pc += self.sext(offset, 8)  # jump to target
                 case "RET":
                     # Get return address from memory via SP
                     # Increment SP
