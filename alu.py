@@ -1,4 +1,3 @@
-# test that his is going to mine and not main
 """
 Starter code for Catamount Processor Unit ALU
 
