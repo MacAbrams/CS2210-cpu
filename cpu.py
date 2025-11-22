@@ -147,8 +147,10 @@ class Cpu:
 
     @staticmethod
     def sext(value, bits=16):
+        mask = (1 << bits) - 1
+        value &= mask
         sign_bit = 1 << (bits - 1)
-        return (value & (sign_bit - 1)) - (value & sign_bit)
+        return (value ^ sign_bit) - sign_bit
 
 
 # Helper function
