@@ -182,9 +182,9 @@ class Cpu:
                     # Get return address from memory via SP
                     return_addr = self._d_mem.read(self._sp)
                     # Increment SP
-                    self._pc += 1
+                    self._sp += 1
                     # Update PC
-                    self_sp = return_addr
+                    self_pc = return_addr
 
                 case "HALT":
                     self._halt = True
