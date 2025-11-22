@@ -82,6 +82,8 @@ class Cpu:
                     data = upper | lower
                     self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "LOAD":
+
+                    # TODO fix this one, I think there's something wrong with it
                     rd = self._decoded.rd
                     ra = self._decoded.ra
 
@@ -93,16 +95,31 @@ class Cpu:
                     self._regs.execute(rd=rd, data=data, write_enable=True)
 
                 case "STORE":
-
+                    # TODO same
                     ra = self._decoded.ra
                     rb = self._decoded.rb
                     imm = self._decoded.imm
+
                     op_a, op_b = self._regs.execute(ra=ra, rb=rb)
+
                     self._d_mem.write_enable(True)
                     self._d_mem.write(op_b + imm, op_a)
 
                 case "ADDI":
-                    pass  # complete implementation here
+
+                    self._alu.set_op("ADD")
+
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    imm = self._decoded.imm
+
+                    op_a, op_b = self._regs.execute(ra=ra,rb=None)
+
+                    data = self._alu.execute(op_a, imm)
+
+                    self._regs.execute(rd=rd, data=data, write_enable=True)
+
+
                 case "ADD":
                     self._alu.set_op("ADD")
 
@@ -150,13 +167,17 @@ class Cpu:
                     self._regs.execute(rd=rd, data=data, write_enable=True)
 
                 case "SHFT":
+
                     self._alu.set_op("SHFT")
                     rd = self._decoded.rd
                     ra = self._decoded.ra
                     rb = self._decoded.rb
+
                     op_a, op_b = self._regs.execute(ra=ra, rb=rb)
-                    result = self._alu.execute(op_a, op_b)
-                    self._regs.execute(rd=rd, data=result, write_enable=True)
+
+                    data = self._alu.execute(op_a, op_b)
+
+                    self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "BEQ":
                     if self._alu.zero:
                         offset = self.sext(self._decoded.imm, 8)
