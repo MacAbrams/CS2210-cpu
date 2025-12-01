@@ -42,7 +42,7 @@ class Register:
             raise ValueError("Operand too wide")
         self.value = value
 
-     def __repr__(self):
+    def __repr__(self):
         return f"{self.raw:04X}"
 
     @property
