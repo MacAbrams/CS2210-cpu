@@ -11,4 +11,4 @@ START:
     SHFT   R4, R3, R2     ; R4 = R3 >> 2   = 0000 0000 0000 0011
     OR     R5, R3, R4     ; R5 = R3 | R4   = 0000 0000 0000 1111
 END:
-    HALT                  ; Stop execution
+    HALT
