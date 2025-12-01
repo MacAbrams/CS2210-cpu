@@ -83,11 +83,12 @@ class Cpu:
                     self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "LOAD":
 
-                    # TODO fix this one, I think there's something wrong with it
+
                     rd = self._decoded.rd
                     ra = self._decoded.ra
 
-                    imm = self._decoded.imm
+
+                    imm = self.sext(self._decoded.imm,6)
 
                     op_a, op_b = self._regs.execute(ra=ra, rb=None)
 
@@ -95,10 +96,10 @@ class Cpu:
                     self._regs.execute(rd=rd, data=data, write_enable=True)
 
                 case "STORE":
-                    # TODO same
+
                     ra = self._decoded.ra
                     rb = self._decoded.rb
-                    imm = self._decoded.imm
+                    imm = self.sext(self._decoded.imm, 6)
 
                     op_a, op_b = self._regs.execute(ra=ra, rb=rb)
 
@@ -205,7 +206,7 @@ class Cpu:
                     # Increment SP
                     self._sp += 1
                     # Update PC
-                    self_pc = return_addr
+                    self._pc = return_addr
 
                 case "HALT":
                     self._halt = True
