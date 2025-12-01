@@ -84,12 +84,9 @@ class Cpu:
                     rd = self._decoded.rd
                     ra = self._decoded.ra
                     imm6 = self._decoded.imm & 0x3f
-                    imm8 = imm6
-                    # sign extend to 16 bits
-                    if (imm6 & 0x20) != 0:
-                        imm8 |= 0xffc0
+                    imm16 = self.sext(imm6, bits=6)
                     a, b = self._regs.execute(ra=ra, rb=None)
-                    addr = a + imm8
+                    addr = a + imm16
                     data = self._d_mem.read(addr=addr)
                     self._regs.execute(rd=rd, data=data, write_enable=True)
 
@@ -208,8 +205,10 @@ class Cpu:
 
     @staticmethod
     def sext(value, bits=16):
+        mask = (1 << bits) - 1
+        value &= mask
         sign_bit = 1 << (bits - 1)
-        return (value & (sign_bit - 1)) - (value & sign_bit)
+        return (value ^ sign_bit) - sign_bit
 
     def get_reg(self, r):
         """
