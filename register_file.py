@@ -42,8 +42,13 @@ class Register:
             raise ValueError("Operand too wide")
         self.value = value
 
-    def __repr__(self):
-        return f"{self.name}: {self.value:04X}"
+     def __repr__(self):
+        return f"{self.raw:04X}"
+
+    @property
+    def raw(self):
+        return self.value & 0xFFFF  # always unsigned
+
 
 
 class RegisterFile:
