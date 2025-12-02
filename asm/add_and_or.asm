@@ -9,10 +9,11 @@ START:
     ;we need to use 3 loadi, and the solution I found were either this, or
     ;having the loadi with the other 3, and have
     ; AND R2,R2,R2 (which is a bit silly)
-    HALT
+    B DONE
 
 SAFE:
     OR R2, R1, R0
+DONE:
     HALT
 
 
